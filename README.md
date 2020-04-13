@@ -12,4 +12,5 @@ The files so far are:
 - *vent_analysis.py:* this code is more elaborated because it defines the mechanism as an object; it makes it more flexible.
 - *vent_synthesis.py:* the first version of a code that may be used for designing a new mechanism.
 
+This is how the base mechanism looks like
 ![Position analysis](./img/posi_analysis.png)
