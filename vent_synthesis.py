@@ -40,11 +40,11 @@ plt.close('all')
 # =============================================================================
 # Rocker conditions
 delta4 = 25. * np.pi / 180.
-q41 = -120. * np.pi / 180.
-q42 = q41 + delta4
+q41A = -90. * np.pi / 180. - delta4 / 2.
+q42A = -90. * np.pi / 180. + delta4 / 2.
 # Input conditions
-q21A = -135. * np.pi / 180.
-q22A = -90. * np.pi / 180.
+q21A = -115.5 * np.pi / 180.
+q22A = -67.5 * np.pi / 180.
 # Chasis
 r1Ax = 167.5
 r1Ay = 19.
@@ -54,29 +54,29 @@ r2 = 25.
 # Initialization for solver
 r30 = 165.
 r40 = 40.
-q310 = 0.75
-q320 = 1.41
+q310 = 0.
+q320 = 0.
 x0 = np.array([r30, r40, q310, q320])
 
 # Solver
 # args = (r1x, r1y, r2, q21, q22, q41, q42)
-sol = fsolve(rrr_res, x0, args = (r1Ax, r1Ay, r2, q21A, q22A, q41, q42))
-r3 = sol[0]
-r4 = sol[1]
-print(r3, r4)
+sol = fsolve(rrr_res, x0, args = (r1Ax, r1Ay, r2, q21A, q22A, q41A, q42A))
+r3A = sol[0]
+r4A = sol[1]
+print(r3A, r4A)
 
-mecA = vt.RRR(r2, r3, r4, r1Ax, r1Ay, inv = 1.)
+mecA = vt.RRR(r2, r3A, r4A, r1Ax, r1Ay, inv = 1.)
 
 # =============================================================================
 # Mechanism B - synthesis
 # =============================================================================
 # Rocker conditions
 delta4 = 25. * np.pi / 180.
-q41 = -214. * np.pi / 180.
-q42 = q41 + delta4
+q41B = 167.5 * np.pi / 180.
+q42B = 167.5 * np.pi / 180. + delta4
 # Input conditions
-q21B = 135. * np.pi / 180.
-q22B = 180. * np.pi / 180.
+q21B = 157.5 * np.pi / 180.
+q22B = 202.5 * np.pi / 180.
 # Chasis
 r1Bx = 11.
 r1By = 147.4
@@ -85,19 +85,38 @@ r2 = 25.
 
 # Initialization for solver
 r30 = 154.
-r40 = 40.
-q310 = 0.75
-q320 = 1.41
+r40 = 45.
+q310 = 1.5
+q320 = 1.5
 x0 = np.array([r30, r40, q310, q320])
 
 # Solver
 # args = (r1x, r1y, r2, q21, q22, q41, q42)
-sol = fsolve(rrr_res, x0, args = (r1Bx, r1By, r2, q21B, q22B, q41, q42))
-r3 = sol[0]
-r4 = sol[1]
-print(r3, r4)
+sol = fsolve(rrr_res, x0, args = (r1Bx, r1By, r2, q21B, q22B, q41B, q42B))
+r3B = sol[0]
+r4B = sol[1]
+print(r3B, r4B)
+print(sol)
 
-mecB = vt.RRR(r2, r3, r4, r1Bx, r1By, inv = -1.)
+mecB = vt.RRR(r2, r3B, r4B, r1Bx, r1By, inv = -1.)
+# mecB.coeff_list()
+
+
+# Input angle config
+delta_ang = 1.
+q = np.arange(22.5, 67.5 + delta_ang, delta_ang) * np.pi / 180. 
+    
+# Input link position
+q2A = q - 3. * np.pi / 4.
+q2B = q + 3. * np.pi / 4.
+
+# Compute a list of positions
+mecA.posi_list(q2A)
+mecB.posi_list(q2B)
+
+# Compute a list of vel coefficients    
+mecA.coeff_list(q2A)
+mecB.coeff_list(q2B)
 
 # =============================================================================
 # Drawing of extreme positions
@@ -114,4 +133,38 @@ mecB.update_posi(q22B)
 mecB.draw_posi()
 
 plt.axis('equal')
+
+# Rocker angle
+plt.figure()
+plt.plot(q * 180. / np.pi, mecA.q4_list * 180. / np.pi)
+plt.plot(q * 180. / np.pi, mecB.q4_list * 180. / np.pi)
+plt.xlabel('$\\theta_2$ (deg)')
+plt.ylabel('$\\theta_4$ (deg)')
+plt.grid()
+plt.legend(['A', 'B'])
+
+# Rocker angle delta
+plt.figure()
+plt.plot(q * 180. / np.pi, (mecA.q4_list - mecA.q4_list[0]) * 180. / np.pi)
+plt.plot(q * 180. / np.pi, (mecB.q4_list - mecB.q4_list[0]) * 180. / np.pi)
+plt.xlabel('$\\theta_2$ (deg)')
+plt.ylabel('$\Delta \\theta_4$ (deg)')
+plt.grid()
+plt.legend(['A', 'B'])
+
+# Velocity coeffs
+plt.figure()
+plt.plot(q * 180. / np.pi, mecA.k4_list)
+plt.plot(q * 180. / np.pi, mecB.k4_list)
+plt.xlabel('$\\theta_2$ (deg)')
+plt.ylabel('$K_4 = 1 / VM$')
+plt.legend(['A', 'B'])
+
+# VM
+plt.figure()
+plt.plot(q * 180. / np.pi, 1. / mecA.k4_list, '.')
+plt.plot(q * 180. / np.pi, 1. / mecB.k4_list, '+')
+plt.legend(['A', 'B'])
+plt.xlabel('$\\theta_2$ (deg)')
+plt.ylabel('$VM$')
 
