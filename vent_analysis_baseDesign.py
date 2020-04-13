@@ -60,12 +60,10 @@ def rrr_vec(q2, r1x, r1y, r2, r3, r4):
 # Input
 r2 = 25.
 # Coupler
-# r3A = 165.
 r3A = 164.
 r3B = 154.
 # Rocker
-# r4 = 40.
-r4 = 43.
+r4 = 40.
 # Cam
 r4c = 150.
 delta4A = 150. * np.pi / 180.
@@ -96,9 +94,12 @@ q3B, q4B, R2B, R3B, R4B = rrr(q2B, r1Bx, r1By, r2, r3B, r4, inv = -1.)
 R4A_c = r4c * vunitary(q4A - delta4A)
 R4B_c = r4c * vunitary(q4B + delta4B)
 
-
+print('delta q4A:', q4A[0,0] * 180. / np.pi, q4A[0,-1] * 180. / np.pi)
+print('delta q4B:', q4B[0,0] * 180. / np.pi, q4B[0,-1] * 180. / np.pi)
 print('delta q4A:', (q4A[0,-1] - q4A[0,0]) * 180. / np.pi)
 print('delta q4B:',(q4B[0,-1] - q4B[0,0]) * 180. / np.pi)
+print('q4A_m:', 0.5 * (q4A[0,-1] + q4A[0,0]) * 180. / np.pi)
+print('q4B_m:', 0.5 * (q4B[0,-1] + q4B[0,0]) * 180. / np.pi)
 
 
 # =============================================================================
