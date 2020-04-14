@@ -18,4 +18,4 @@ This is how the base mechanism looks like:
 ![Position analysis](./img/posi_analysis.png)
 
 This is how a re-degigned mechanism may look like:
-![Position analysis](./img/posi_analysis_new.png)
+![Position analysis](./img/mecanismo_nuevo_xy_45deg.png)
