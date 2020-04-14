@@ -148,6 +148,9 @@ mecB.update_posi(q22B)
 mecB.draw_posi()
 
 plt.axis('equal')
+plt.grid()
+plt.xlabel('$x$ (mm) - horz')
+plt.ylabel('$y$ (mm) - vert')
 
 # Rocker angle
 plt.figure()
@@ -180,142 +183,6 @@ plt.figure()
 plt.plot(q * 180. / np.pi, 1. / mecA.k4_list, '.')
 plt.plot(q * 180. / np.pi, 1. / mecB.k4_list, '+')
 plt.plot(q * 180. / np.pi, 0.5 * (1. / mecA.k4_list + 1. / mecB.k4_list))
-plt.legend(['A', 'B'])
-plt.xlabel('$\\theta_2$ (deg)')
-plt.ylabel('$VM$')
-
-
-# =============================================================================
-# Synthesis - opt 2
-# =============================================================================
-# =============================================================================
-# General parameters
-# =============================================================================
-# Input link
-r2 = 25.
-delta2 = 45. * np.pi / 180.
-# Rocker
-delta4 = 25. * np.pi / 180.
-# =============================================================================
-# Mechanism A - synthesis
-# =============================================================================
-# Rocker conditions
-# q4mA = -107. * np.pi / 180.
-q4mA = -75. * np.pi / 180.
-q41A = q4mA - delta4 / 2.
-q42A = q4mA + delta4 / 2.
-# Input conditions
-q2mA = -67.5 * np.pi / 180.
-q21A = q2mA - delta2 / 2.
-q22A = q2mA + delta2 / 2.
-# Chasis
-r1Ax = 167.5 + 40.
-r1Ay = 19. + 40.
-print('Angle:', np.arctan(r1Ay / r1Ax) * 180. / np.pi)
-
-# =============================================================================
-# Mechanism B - synthesis
-# =============================================================================
-# Rocker conditions
-# q4mB = 159. * np.pi / 180.
-q4mB = 165. * np.pi / 180.
-q41B = q4mB - delta4 / 2.
-q42B = q4mB + delta4 / 2.
-# Input conditions
-q2mB = 202.5 * np.pi / 180.
-q21B = q2mB - delta2 / 2.
-q22B = q2mB + delta2 / 2.
-# Chasis
-r1Bx = 11. + 40.
-r1By = 147.4 + 40.
-print('Angle:', np.arctan(r1Bx / r1By) * 180. / np.pi)
-
-# Initialization for solver
-r3A0 = 165.
-r3B0 = 154.
-r40 = 40.
-q31A0 = 0.
-q32A0 = 0.
-q31B0 = 1.5
-q32B0 = 1.5
-x0 = np.array([r3A0, r3B0, r40, q31A0, q32A0, q31B0, q32B0, q4mA])
-
-# Solver
-# rrr_res(x, r1Ax, r1Ay, r2, q21A, q22A, q21B, q22B, q4Bm, delta4)
-sol = fsolve(rrr_res, x0,
-             args = (r1Ax, r1Ay, r2, q21A, q22A, q21B, q22B, q4mB, delta4))
-r3A = sol[0]
-r3B = sol[1]
-r4 = sol[2]
-q4mA = sol[7]
-
-print(r3A, r3B, r4, q4mA * 180. / np.pi)
-
-mecA = vt.RRR(r2, r3A, r4, r1Ax, r1Ay, inv = 1.)
-mecB = vt.RRR(r2, r3B, r4, r1Bx, r1By, inv = -1.)
-
-# Input angle config
-delta_ang = 1.
-q = np.arange(45., 90. + delta_ang, delta_ang) * np.pi / 180. 
-    
-# Input link position
-q2A = q - 3. * np.pi / 4.
-q2B = q + 3. * np.pi / 4.
-
-# Compute a list of positions
-mecA.posi_list(q2A)
-mecB.posi_list(q2B)
-
-# Compute a list of vel coefficients
-mecA.coeff_list(q2A)
-mecB.coeff_list(q2B)
-
-# =============================================================================
-# Drawing of extreme positions
-# =============================================================================
-plt.figure()
-mecA.update_posi(q21A)
-mecA.draw_posi()
-mecA.update_posi(q22A)
-mecA.draw_posi()
-
-mecB.update_posi(q21B)
-mecB.draw_posi()
-mecB.update_posi(q22B)
-mecB.draw_posi()
-
-plt.axis('equal')
-
-# Rocker angle
-plt.figure()
-plt.plot(q * 180. / np.pi, mecA.q4_list * 180. / np.pi)
-plt.plot(q * 180. / np.pi, mecB.q4_list * 180. / np.pi)
-plt.xlabel('$\\theta_2$ (deg)')
-plt.ylabel('$\\theta_4$ (deg)')
-plt.grid()
-plt.legend(['A', 'B'])
-
-# Rocker angle delta
-plt.figure()
-plt.plot(q * 180. / np.pi, (mecA.q4_list - mecA.q4_list[0]) * 180. / np.pi)
-plt.plot(q * 180. / np.pi, (mecB.q4_list - mecB.q4_list[0]) * 180. / np.pi)
-plt.xlabel('$\\theta_2$ (deg)')
-plt.ylabel('$\Delta \\theta_4$ (deg)')
-plt.grid()
-plt.legend(['A', 'B'])
-
-# Velocity coeffs
-plt.figure()
-plt.plot(q * 180. / np.pi, mecA.k4_list)
-plt.plot(q * 180. / np.pi, mecB.k4_list)
-plt.xlabel('$\\theta_2$ (deg)')
-plt.ylabel('$K_4 = 1 / VM$')
-plt.legend(['A', 'B'])
-
-# VM
-plt.figure()
-plt.plot(q * 180. / np.pi, 1. / mecA.k4_list, '.')
-plt.plot(q * 180. / np.pi, 1. / mecB.k4_list, '+')
 plt.legend(['A', 'B'])
 plt.xlabel('$\\theta_2$ (deg)')
 plt.ylabel('$VM$')
